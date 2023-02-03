@@ -43,8 +43,33 @@ git clean -f -d
 git reset --file
 ```
 
+### Remove commit
+```
+git reset --hard HEAD~~
+```
+
+### Resolve conflict
+- Commit file change
+
+- Pull code
+
+- Resolve conflict
+
+- Commit resolve conflict
+
+- Push code
+```
+git commit -a -m "Message"
+git pull
+git add .
+git commit 
+git push
+```
+
 ### Using git credential to store config
 ```
 git config --global credential.helper "store"
 ```
 https://stackoverflow.com/questions/45925964/how-to-use-git-credential-store-on-wsl-ubuntu-on-windows
+
+More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
