@@ -131,6 +131,23 @@ $config['system.logging']['error_level'] = 'verbose';
     $pager = \Drupal::service('pager.manager');
     $paging = $pager->createPager($count, 4);
     dd($items, $count, $paging->getLimit());
+     ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
+      ->limit(self::ITEMS_PER_PAGE)
+```
+```
+public static function getPager($totalItems, $limit): array
+  {
+    /** @var \Drupal\Core\Pager\PagerManagerInterface $pager */
+    $pager = \Drupal::service('pager.manager');
+    $paging = $pager->createPager($totalItems, $limit);
+    return [
+      'count' => $paging->getTotalItems(),
+      'pages' => $paging->getTotalPages(),
+      'items_per_page' => $paging->getLimit(),
+      'current_page' => $paging->getCurrentPage(),
+      'next_page' => $paging->getCurrentPage() + 1 >= $paging->getTotalPages() ? 0 : $paging->getCurrentPage() + 1
+    ];
+  }
 ```
     
 ### Get translate node
