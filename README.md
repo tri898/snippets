@@ -209,3 +209,15 @@ function cbt_utilities_field_widget_paragraphs_form_alter(&$element, \Drupal\Cor
 }
 
 ```
+
+### Render image with image style
+```
+use Drupal\image\Entity\ImageStyle;
+
+$thumbUri = 'uri link;
+$imgStyleThumb = ImageStyle::load('40_x_40')
+   ->buildUrl($thumbUri);
+$thumbnailImage = \Drupal::service('file_url_generator')
+   ->generateAbsoluteString($imgStyleThumb);
+
+```
