@@ -85,6 +85,7 @@ More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 ```
  fields._fieldsname.content
 ```
+module for twig field: https://www.drupal.org/project/twig_field_value
 
 ### Import/export db using drush
 ---export 
