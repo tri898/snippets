@@ -97,7 +97,7 @@ vendor/bin/drush sql-dump > a.sql
 vendor/bin/drush sql-cli < 20221114.sql
 ```
 
-### Get params
+### Get params in request
 If you have the url for example /page?uid=123&num=452
 
 To get all params, use: 
@@ -117,7 +117,7 @@ $num = \Drupal::request()->query->get('num');
 $config['system.logging']['error_level'] = 'verbose';
 ```
 
-### Get paging info in query database
+### Get pager in query database
 ```
     $query = \Drupal::entityQuery('node');
     $query->condition('status', 1);
@@ -220,4 +220,18 @@ $imgStyleThumb = ImageStyle::load('40_x_40')
 $thumbnailImage = \Drupal::service('file_url_generator')
    ->generateAbsoluteString($imgStyleThumb);
 
+```
+### Using multiple Path Auto patterm for entity
+```
+use Drupal\pathauto\PathautoPatternInterface;
+
+function mymodule_pathauto_pattern_alter(PathautoPatternInterface $pattern, array $context) {
+  if ($context['module'] == 'node' && $context['op'] === "update" && $context['bundle'] === "news") {
+    $node = $context['data']['node'];
+    $archived = $node->get('field_archived')->getString() === "1";
+    if ($archived) {
+      $pattern->setPattern('/archive/[node::title]');
+    }
+  }
+}
 ```
