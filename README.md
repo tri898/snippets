@@ -235,3 +235,111 @@ function mymodule_pathauto_pattern_alter(PathautoPatternInterface $pattern, arra
   }
 }
 ```
+### Create Drush command batch
+```
+class TripPathAliasByDestinationCommands extends DrushCommands {
+
+  /**
+   * Update trip path alias by destination.
+   *
+   * @command cmd:update_trip_path_alias_by_destination
+   * @aliases cmd:utpabd
+   *
+   * @usage cmd:update_region_trip_path
+   *   Batch for update trip path alias by destination.
+   */
+  public function update($destinationId) {
+    $this->logger()->notice("Start Batch Update Trip Path Alias.");
+      ...
+
+    if (empty($trips)) {
+      return;
+    }
+    // Chunk data
+    $trips = array_chunk($trips, 50);
+    $operations = [];
+    foreach ($trips as $splitTrips) {
+      $operations[] = [
+        '\Drupal\utilities\Commands\TripPathAliasByDestinationCommands::processUpdatePathAlias',
+        [
+          $splitTrips,
+        ],
+      ];
+    }
+
+    $batch = [
+      'title' => t('Executing @num trip(s)', ['@num' => count($trips)]),
+      'operations' => $operations,
+      'finished' => '\Drupal\utilities\Commands\TripPathAliasByDestinationCommands::finishUpdatePathAlias',
+    ];
+
+    batch_set($batch);
+    drush_backend_batch_process();
+    $this->logger()->notice("Finish Batch Update Trip Path Alias.");
+  }
+
+  /**
+   * processUpdatePathAlias.
+   */
+  public static function processUpdatePathAlias($trips, &$context) {
+    $context['results'][] = count($trips);
+    foreach ($trips as $trip) {
+      try {
+       ...
+      }
+      catch (\Exception $ex) {
+        \Drupal::logger('update_trip_path_alias_by_destination')
+          ->error("Can Not Update Trip Path ($trip), Error: {$ex->getMessage()}.");
+      }
+    }
+  }
+
+  /**
+   * finishUpdatePathAlias.
+   */
+  public static function finishUpdatePathAlias($success, array $results, array $operations) {
+    if ($success) {
+      $count = array_sum($results);
+      \Drupal::logger('update_trip_path_alias_by_destination')->info(t('Finish Batch Update Trip Path Alias. @count results processed.', [
+        '@count' => $count,
+      ]));
+    }
+    else {
+      $errorOperation = reset($operations);
+      \Drupal::logger('update_trip_path_alias_by_destination')->info(t('Finish Batch Update Trip Path Alias. An error occurred while processing @operation with arguments : @args.', [
+        '@operation' => $errorOperation[0],
+        '@args' => print_r($errorOperation[0], TRUE),
+      ]));
+    }
+  }
+
+}
+```
+* drush.services.yml
+```
+  cmd_update_trip_path_alias_by_destination.commands:
+    class: \Drupal\utilities\Commands\TripPathAliasByDestinationCommands
+    tags:
+      - { name: drush.command }
+  ```
+ * Call command
+ ```
+ _call_drush_command('cmd:utpabd');
+```
+
+### Generate Path Alias
+   Checkbox auto generate
+```
+ $entity = \Drupal::entityTypeManager()->getStorage('node')->load($id);
+ $entity->set('path', ['pathauto' => PathautoState::CREATE]);
+ $entity->save();
+```
+   Create manual path
+```
+ $entity = \Drupal::entityTypeManager()->getStorage('node')->load($id);
+ $entity->set('path', [
+  'alias' => '/mypath/' . $title,
+  'pathauto' => PathautoState::SKIP,
+ ]);
+ $entity->save();
+```
