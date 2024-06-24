@@ -98,17 +98,17 @@ vendor/bin/drush sql-cli < 20221114.sql
 ```
 
 ### Get params in request
-If you have the url for example /page?uid=123&num=452
+**If you have the url for example** /page?uid=123&num=452
 
-To get all params, use: 
+**To get all params, use: **
 
 $param = \Drupal::request()->query->all();
 
-To get "uid" from the url, use:
+**To get "uid" from the url, use:**
 
 $uid = \Drupal::request()->query->get('uid');
 
-To get "num" from the url, use:
+**To get "num" from the url, use:**
 
 $num = \Drupal::request()->query->get('num');
 
@@ -322,10 +322,6 @@ class TripPathAliasByDestinationCommands extends DrushCommands {
     tags:
       - { name: drush.command }
   ```
- * Call command
- ```
- _call_drush_command('cmd:utpabd');
-```
 
 ### Generate Path Alias
    Checkbox auto generate
