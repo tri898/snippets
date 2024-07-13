@@ -77,7 +77,9 @@ More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 # DRUPAL
 
 More info: https://drupal.bermaki.com/drupal-documentation-and-guides
+
 https://gorannikolovski.com/snippets?page=1
+
 https://github.com/flashvnn/drupal-snippets/blob/master/README.md
 ### Get fields in view
 ```
