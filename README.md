@@ -75,6 +75,10 @@ https://stackoverflow.com/questions/45925964/how-to-use-git-credential-store-on-
 More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 
 # DRUPAL
+
+More info: https://drupal.bermaki.com/drupal-documentation-and-guides
+https://gorannikolovski.com/snippets?page=1
+https://github.com/flashvnn/drupal-snippets/blob/master/README.md
 ### Get fields in view
 ```
 {{ row.content['#row']._entity.title.value }}
@@ -88,31 +92,31 @@ More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 module for twig field: https://www.drupal.org/project/twig_field_value
 
 ### Import/export db using drush
----export 
+- Export 
 ```
 vendor/bin/drush sql-dump > a.sql
 ```
----import
+- Import
 ```
 vendor/bin/drush sql-cli < 20221114.sql
 ```
 
 ### Get params in request
-**If you have the url for example** /page?uid=123&num=452
+** If you have the url for example** /page?uid=123&num=452
 
-**To get all params, use: **
-
+** To get all params, use: **
+```
 $param = \Drupal::request()->query->all();
-
-**To get "uid" from the url, use:**
-
+```
+** To get "uid" from the url, use:**
+```
 $uid = \Drupal::request()->query->get('uid');
-
-**To get "num" from the url, use:**
-
+```
+** To get "num" from the url, use:**
+```
 $num = \Drupal::request()->query->get('num');
-
-### enable debug:
+```
+### Enable debug:
 ```
 $config['system.logging']['error_level'] = 'verbose';
 ```
