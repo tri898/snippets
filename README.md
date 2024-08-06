@@ -74,6 +74,17 @@ https://stackoverflow.com/questions/45925964/how-to-use-git-credential-store-on-
 
 More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 
+# DOCKER
+- Backup
+```
+docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
+```
+
+- Restore
+```
+cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
+```
+
 # DRUPAL
 
 More info: https://drupal.bermaki.com/drupal-documentation-and-guides
