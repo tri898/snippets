@@ -1,16 +1,16 @@
 # GIT SNIPPET
 
-### Log changes:
+## Log changes:
 ```
 git log --oneline
 ```
 
-### Show all branch:
+## Show all branch:
 ```
 git branch
 ```
 
-### Change branch name
+## Change branch name
 
    + Step 1: Rename branch in local:
 ```
@@ -22,33 +22,33 @@ git branch -m bugfix
 git push origin --delete bogfix
 ```
 
-### Add change to committed
+## Add change to committed
 ```
  git commit --amend -a
 ```
 
-### Clear change in local branch
+## Clear change in local branch
 ```
 git checkout --file
 git checkout -- .
 ```
 
-### Remove untrack file
+## Remove untrack file
 ```
 git clean -f -d
 ```
 
-### Remove file in staging (committed)
+## Remove file in staging (committed)
 ```
 git reset --file
 ```
 
-### Remove commit
+## Remove commit
 ```
 git reset --hard HEAD~~
 ```
 
-### Resolve conflict
+## Resolve conflict
 - Commit file change
 
 - Pull code
@@ -66,7 +66,7 @@ git commit
 git push
 ```
 
-### Using git credential to store config
+## Using git credential to store config
 ```
 git config --global credential.helper "store"
 ```
@@ -75,12 +75,12 @@ https://stackoverflow.com/questions/45925964/how-to-use-git-credential-store-on-
 More about git: https://backlog.com/git-tutorial/vn/stepup/stepup1_1.html
 
 # DOCKER
-- Backup
+- Backup DB
 ```
 docker exec CONTAINER /usr/bin/mysqldump -u root --password=root DATABASE > backup.sql
 ```
 
-- Restore
+- Restore DB
 ```
 cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
 ```
@@ -92,19 +92,19 @@ More info: https://drupal.bermaki.com/drupal-documentation-and-guides
 https://gorannikolovski.com/snippets?page=1
 
 https://github.com/flashvnn/drupal-snippets/blob/master/README.md
-### Get fields in view
+## Get fields in view
 ```
 {{ row.content['#row']._entity.title.value }}
 {{ view.style_plugin.getField(key, 'title') }}
 ```
 
- ### Get field in view field:
+ ## Get field in view field:
 ```
  fields._fieldsname.content
 ```
-module for twig field: https://www.drupal.org/project/twig_field_value
+Module for twig field: https://www.drupal.org/project/twig_field_value
 
-### Import/export db using drush
+## Import/export DB using drush command
 - Export 
 ```
 vendor/bin/drush sql-dump > a.sql
@@ -114,7 +114,7 @@ vendor/bin/drush sql-dump > a.sql
 vendor/bin/drush sql-cli < 20221114.sql
 ```
 
-### Get params in request
+## Get params in request
 ** If you have the url for example** /page?uid=123&num=452
 
 ** To get all params, use: **
@@ -129,12 +129,12 @@ $uid = \Drupal::request()->query->get('uid');
 ```
 $num = \Drupal::request()->query->get('num');
 ```
-### Enable debug:
+## Enable debug:
 ```
 $config['system.logging']['error_level'] = 'verbose';
 ```
 
-### Get pager in query database
+## Get pager in query database
 ```
     $query = \Drupal::entityQuery('node');
     $query->condition('status', 1);
@@ -168,7 +168,7 @@ public static function getPager($totalItems, $limit): array
   }
 ```
     
-### Get translate node
+## Get translate node
 ```
   foreach ($greenChoicesNodes as $greenChoicesNode) {
     if ($greenChoicesNode->hasTranslation($langcode)) {
@@ -180,7 +180,7 @@ public static function getPager($totalItems, $limit): array
 ```
 
 
-### Join one table with multiple table
+## Join one table with multiple table in Dynamic Queries
 ```
 $or = new Condition('OR');
 $or->condition("node__field_n_p_banner.field_n_p_banner_target_id", NULL, 'IS NOT NULL');
@@ -189,7 +189,7 @@ $this->query->addWhere($this->options['group'], $or);
 ```
 
 
-### Custom formState Paragraph
+## Custom formState Paragraph
 
 ```
 /**
@@ -227,7 +227,7 @@ function cbt_utilities_field_widget_paragraphs_form_alter(&$element, \Drupal\Cor
 
 ```
 
-### Render image with image style
+## Render image with image style
 ```
 use Drupal\image\Entity\ImageStyle;
 
@@ -238,7 +238,7 @@ $thumbnailImage = \Drupal::service('file_url_generator')
    ->generateAbsoluteString($imgStyleThumb);
 
 ```
-### Using multiple Path Auto patterm for entity
+## Using multiple Path Auto patterm for entity
 ```
 use Drupal\pathauto\PathautoPatternInterface;
 
@@ -252,7 +252,7 @@ function mymodule_pathauto_pattern_alter(PathautoPatternInterface $pattern, arra
   }
 }
 ```
-### Create Drush command batch
+## Create Drush command batch
 ```
 class TripPathAliasByDestinationCommands extends DrushCommands {
 
@@ -340,7 +340,7 @@ class TripPathAliasByDestinationCommands extends DrushCommands {
       - { name: drush.command }
   ```
 
-### Generate Path Alias
+## Generate Path Alias
    Checkbox auto generate
 ```
  $entity = \Drupal::entityTypeManager()->getStorage('node')->load($id);
@@ -355,4 +355,15 @@ class TripPathAliasByDestinationCommands extends DrushCommands {
   'pathauto' => PathautoState::SKIP,
  ]);
  $entity->save();
+```
+## Override view URL
+```
+/**
+ * Implements hook_views_pre_view().
+ */
+function hook_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'product' && $display_id == 'page_1' && is_numeric($view->args[0])) {
+    $view->override_url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $view->args[0]]);
+  }
+}
 ```
