@@ -45,7 +45,8 @@ git reset --file
 
 ## Remove commit
 ```
-git reset --hard HEAD~~
+git reset --hard HEAD~~ (remove commit)
+git reset --soft HEAD~~ (uncommited to working area)
 ```
 
 ## Resolve conflict
@@ -366,4 +367,110 @@ function hook_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
     $view->override_url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $view->args[0]]);
   }
 }
+```
+#validator component
+
+```
+$constraints = new Collection([
+      'name' => new Required([
+        new Type('string'),
+        new NotBlank(),
+        // Matching `type: label` in core.data_types.schema.yml.
+        new RegexConstraint(
+          pattern: '/([^\PC])/u',
+          message: 'Recipe names cannot span multiple lines or contain control characters.',
+          match: FALSE,
+        ),
+      ]),
+      'description' => new Optional([
+        new NotBlank(),
+        // Matching `type: text` in core.data_types.schema.yml.
+        new RegexConstraint(
+          pattern: '/([^\PC\x09\x0a\x0d])/u',
+          message: 'The recipe description cannot contain control characters, only visible characters.',
+          match: FALSE,
+        ),
+      ]),
+      'type' => new Optional([
+        new Type('string'),
+        new NotBlank(),
+        // Matching `type: label` in core.data_types.schema.yml.
+        new RegexConstraint(
+          pattern: '/([^\PC])/u',
+          message: 'Recipe type cannot span multiple lines or contain control characters.',
+          match: FALSE,
+        ),
+      ]),
+      'recipes' => new Optional([
+        new All([
+          new Type('string'),
+          new NotBlank(),
+          // If recipe depends on itself, ::validateRecipeExists() will set off
+          // an infinite loop. We can avoid that by skipping that validation if
+          // the recipe depends on itself, which is what Sequentially does.
+          new Sequentially([
+            new NotIdenticalTo(
+              value: basename(dirname($file)),
+              message: 'The {{ compared_value }} recipe cannot depend on itself.',
+            ),
+            new Callback(
+              callback: self::validateRecipeExists(...),
+              payload: $include_path,
+            ),
+          ]),
+        ]),
+      ]),
+      // @todo https://www.drupal.org/i/3424603 Validate the corresponding
+      //   import.
+      'install' => new Optional([
+        new All([
+          new Type('string'),
+          new Sequentially([
+            new NotBlank(),
+            new Callback(self::validateExtensionIsAvailable(...)),
+          ]),
+        ]),
+      ]),
+      'config' => new Optional([
+        new Collection([
+          // Each entry in the `import` list can either be `*` (import all of
+          // the extension's config), or a list of config names to import from
+          // the extension.
+          // @todo https://www.drupal.org/i/3439716 Validate config file name,
+          //   if given.
+          'import' => new Optional([
+            new All([
+              new AtLeastOneOf([
+                new IdenticalTo('*'),
+                new All([
+                  new Type('string'),
+                  new NotBlank(),
+                  new Regex('/^.+\./'),
+                ]),
+              ]),
+            ]),
+          ]),
+          'actions' => new Optional([
+            new All([
+              new Type('array'),
+              new NotBlank(),
+              new Callback(
+                callback: self::validateConfigActions(...),
+                payload: $include_path,
+              ),
+            ]),
+          ]),
+        ]),
+      ]),
+      'content' => new Optional([
+        new Type('array'),
+      ]),
+    ]);
+
+    $recipe_data = Yaml::decode($recipe_contents);
+    /** @var \Symfony\Component\Validator\ConstraintViolationList $violations */
+    $violations = Validation::createValidator()->validate($recipe_data, $constraints);
+    if (count($violations) > 0) {
+      throw RecipeFileException::fromViolationList($file, $violations);
+    }
 ```
