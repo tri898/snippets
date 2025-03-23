@@ -368,7 +368,7 @@ function hook_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
   }
 }
 ```
-#validator component
+## Validator component
 
 ```
 $constraints = new Collection([
